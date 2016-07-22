@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from cross_genes import cross_two
+from cross_genes import cross_multiple, cross_two
 
 
 class TestCrossGenes(TestCase):
@@ -13,4 +13,10 @@ class TestCrossGenes(TestCase):
         self.assertCountEqual(cross_two(self.genes_1, self.genes_2),
                               ["GENE1", "GENE2"])
         self.assertCountEqual(cross_two(self.genes_1, self.genes_3),
+                              ["GENE1"])
+
+    def test_cross_multiple(self):
+        self.assertCountEqual(cross_multiple(self.genes_1,
+                                             self.genes_2,
+                                             self.genes_3),
                               ["GENE1"])
