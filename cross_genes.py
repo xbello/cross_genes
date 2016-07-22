@@ -12,6 +12,13 @@ def cross_two(first, second):
     return list(set(first) & set(second))
 
 
+def cross_multiple_files(*filenames):
+    """Return a list with the common genes between multiple archives."""
+    genes_lists = [load_list(f) for f in filenames]
+
+    return reduce(cross_two, genes_lists)
+
+
 def cross_two_files(filename, filename2):
     """Return a list with the common genes between two archives.
 
@@ -19,16 +26,18 @@ def cross_two_files(filename, filename2):
     should be considered.
 
     """
-    with open(filename) as f1, open(filename2) as f2:
-        genes_first = []
-        genes_second = []
-        for line in f1:
-            gene = line.rstrip().replace('"', "").split(";")[0]
-            genes_first.append(gene)
-        for line in f2:
-            gene = line.rstrip().replace('"', "").split(";")[0]
-            genes_second.append(gene)
-
-    print(genes_first)
+    genes_first = load_list(filename)
+    genes_second = load_list(filename2)
 
     return cross_two(genes_first, genes_second)
+
+
+def load_list(filename):
+    """Return a list with the genes in a filename."""
+    with open(filename) as f1:
+        genes = []
+        for line in f1:
+            gene = line.rstrip().replace('"', "").split(";")[0]
+            genes.append(gene)
+
+    return genes
