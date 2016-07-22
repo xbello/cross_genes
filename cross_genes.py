@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Cross two or more gene sets and return the commong ones."""
 from functools import reduce
 
@@ -33,3 +34,15 @@ def load_list(filename):
             genes.append(gene)
 
     return genes
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Cross matches two or more files for common lines")
+    parser.add_argument("filenames", nargs="+",
+                        help="The name of the files to be crossmatched.")
+
+    args = parser.parse_args()
+    for gene in cross_multiple_files(*args.filenames):
+        print(gene)
