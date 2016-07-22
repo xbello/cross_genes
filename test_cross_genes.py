@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from cross_genes import cross_multiple, cross_two
-from cross_genes import cross_multiple_files, cross_two_files
+from cross_genes import cross_multiple_files
 from cross_genes import load_list
 
 
@@ -28,10 +28,12 @@ class TestCrossGenes(TestCase):
                               ["GENE1"])
 
     def test_cross_two_files(self):
-        self.assertCountEqual(cross_two_files(self.filename1, self.filename2),
-                              ["NOC2L", "PCDHA9", "NOP16"])
-        self.assertCountEqual(cross_two_files(self.filename1, self.filename3),
-                              ["PCDHA9", "NOP16"])
+        self.assertCountEqual(
+            cross_multiple_files(self.filename1, self.filename2),
+            ["NOC2L", "PCDHA9", "NOP16"])
+        self.assertCountEqual(
+            cross_multiple_files(self.filename1, self.filename3),
+            ["PCDHA9", "NOP16"])
 
     def test_cross_multiple_files(self):
         self.assertCountEqual(cross_multiple_files(self.filename1,

@@ -19,21 +19,13 @@ def cross_multiple_files(*filenames):
     return reduce(cross_two, genes_lists)
 
 
-def cross_two_files(filename, filename2):
-    """Return a list with the common genes between two archives.
+def load_list(filename):
+    """Return a list with the genes in a filename.
 
     Some gene names are multiple, like "ABCD, ABCE_1", and only the first one
-    should be considered.
+      should be considered.
 
     """
-    genes_first = load_list(filename)
-    genes_second = load_list(filename2)
-
-    return cross_two(genes_first, genes_second)
-
-
-def load_list(filename):
-    """Return a list with the genes in a filename."""
     with open(filename) as f1:
         genes = []
         for line in f1:
