@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from cross_genes import cross_multiple, cross_two
-from cross_genes import cross_multiple_files
+from cross_genes import cross_combine, cross_multiple_files
 from cross_genes import load_list
 
 
@@ -46,6 +46,21 @@ class TestCrossGenes(TestCase):
         self.assertCountEqual(
             cross_multiple_files(self.filename1, self.filename3),
             ["PCDHA9", "PCDHA1", "PCDHA2", "PCDHA8", "NOP16"])
+
+    def test_cross_combine_multiple_files(self):
+        # When comparing multiple files, the user want to know all-vs-all and
+        #  one-vs-one individually.
+        self.assertCountEqual(
+            cross_combine(self.filename1, self.filename2, self.filename3),
+            {"genes_list-genes_list2":
+             ["NOC2L", "PCDHA1", "PCDHA2", "PCDHA8", "PCDHA9", "NOP16"],
+             "genes_list2-genes_list3":
+             ["CFAP74", "TRMT13", "SASS6", "PCDHA9", "PCDHA1", "PCDHA2",
+              "PCDHA3", "PCDHA4", "PCDHA5", "PCDHA6", "PCDHA7", "PCDHA8",
+              "NOP16", "SCARF2"],
+             "genes_list-genes_list3":
+             ["PCDHA9", "PCDHA1", "PCDHA2", "PCDHA8", "NOP16"]})
+
 
     def test_load_list(self):
         self.assertCountEqual(

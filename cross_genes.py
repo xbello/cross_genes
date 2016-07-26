@@ -1,6 +1,20 @@
 #!/usr/bin/env python3
 """Cross two or more gene sets and return the commong ones."""
 from functools import reduce
+from itertools import combinations
+import os
+
+
+def cross_combine(*filenames):
+    """Return a dict with all combined two vs two crossings."""
+    pair_dicts = {}
+    for pair in combinations(filenames, 2):
+        # Set the filenames to A-B.
+        this_pair = "-".join(
+            [os.path.splitext(os.path.basename(_))[0] for _ in pair])
+        pair_dicts[this_pair] = cross_multiple_files(*pair)
+
+    return pair_dicts
 
 
 def cross_multiple(*gene_sets):
@@ -44,5 +58,11 @@ if __name__ == "__main__":
                         help="The name of the files to be crossmatched.")
 
     args = parser.parse_args()
+    # Print the All-vs-All
     for gene in cross_multiple_files(*args.filenames):
         print(gene)
+    # Print the One-vs-One
+    for pair, genes in cross_combine(*args.filenames).items():
+        print(pair)
+        for gene in genes:
+            print(gene)
