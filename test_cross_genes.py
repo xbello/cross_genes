@@ -27,21 +27,28 @@ class TestCrossGenes(TestCase):
                                              self.genes_3),
                               ["GENE1"])
 
-    def test_cross_two_files(self):
-        self.assertCountEqual(
-            cross_multiple_files(self.filename1, self.filename2),
-            ["NOC2L", "PCDHA9", "NOP16"])
-        self.assertCountEqual(
-            cross_multiple_files(self.filename1, self.filename3),
-            ["PCDHA9", "NOP16"])
-
     def test_cross_multiple_files(self):
         self.assertCountEqual(cross_multiple_files(self.filename1,
                                                    self.filename2,
                                                    self.filename3),
-                              ["PCDHA9", "NOP16"])
+                              ["PCDHA9", "PCDHA1", "PCDHA2", "PCDHA8", "NOP16"])
+
+    def test_cross_one_file(self):
+        self.assertCountEqual(
+            cross_multiple_files(self.filename1),
+            ["NOC2L", "SMYD2", "OR2T35", "PCDHA9", "PCDHA1", "PCDHA2", "PCDHA8",
+             "NOP16"])
+
+    def test_cross_two_files(self):
+        self.assertCountEqual(
+            cross_multiple_files(self.filename1, self.filename2),
+            ["NOC2L", "PCDHA1", "PCDHA2", "PCDHA8", "PCDHA9", "NOP16"])
+        self.assertCountEqual(
+            cross_multiple_files(self.filename1, self.filename3),
+            ["PCDHA9", "PCDHA1", "PCDHA2", "PCDHA8", "NOP16"])
 
     def test_load_list(self):
         self.assertCountEqual(
             load_list(self.filename1),
-            ["NOC2L", "SMYD2", "OR2T35", "PCDHA9", "NOP16"])
+            ["NOC2L", "SMYD2", "OR2T35", "PCDHA1", "PCDHA2", "PCDHA8", "PCDHA9",
+             "NOP16"])

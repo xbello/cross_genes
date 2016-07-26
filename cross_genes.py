@@ -23,15 +23,15 @@ def cross_multiple_files(*filenames):
 def load_list(filename):
     """Return a list with the genes in a filename.
 
-    Some gene names are multiple, like "ABCD, ABCE_1", and only the first one
-      should be considered.
+    Some gene names are multiple, like "ABCD, ABCE_1", everyone of them should
+     be considered.
 
     """
     with open(filename) as f1:
         genes = []
         for line in f1:
-            gene = line.rstrip().replace('"', "").split(";")[0]
-            genes.append(gene)
+            gene = line.rstrip().replace('"', "").split(";")
+            genes.extend(gene)
 
     return genes
 
