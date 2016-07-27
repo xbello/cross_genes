@@ -51,6 +51,15 @@ def difference_two(first, second):
     return list(set(first) - set(second))
 
 
+def different_variants(*filenames):
+    """Return a dict with the different variants per file."""
+    variants_lists = [load_variants(f) for f in filenames]
+
+    different_pos = reduce(difference_two, variants_lists)
+
+    return {pos: variants_lists[0][pos] for pos in different_pos}
+
+
 def load_list(filename):
     """Return a list with the genes in a filename.
 
