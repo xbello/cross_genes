@@ -102,6 +102,9 @@ class TestCrossPositions(TestCase):
         self.assertCountEqual(
             cg.difference_two(self.positions1, self.positions2),
             [("chr1", "762592", "762592")])
+        self.assertCountEqual(
+            cg.difference_two(self.positions2, self.positions1),
+            [("chr1", "762273", "762273")])
 
     def test_load_variants(self):
         self.assertCountEqual(cg.load_variants(self.filename1).keys(),
