@@ -1,6 +1,16 @@
 # cross_genes
 Check the common names in multiple files.
 
+Install
+=======
+
+Just download the whole repo and execute `cross_genes.py` file with the python
+interpreter. No libraries are needed.
+
+Usage
+=====
+
+
 ```
     usage: cross_genes.py [-h] [--variants] [--exclusion]
                           filenames [filenames ...]
@@ -18,24 +28,24 @@ Check the common names in multiple files.
                    common position search.
 ```
 
-Samples:
+Samples
+=======
 
 ```
 
 python cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants --exclusion
 ```
 
-Prints a .tsv output with the variants in CASE1 that are unique to that file
+Prints a .tsv output with the variants in CASE1 that are unique to that file.
 
 ```
 python cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants
 ```
 
-Prints a .tsv output with the variants common to CASE1 and CASE2
+Prints a .tsv output with the variants common to CASE1 and CASE2.
 
 ```
-python cross_genes.py test_files/genes_list2.txt test_files/genes_list3.txt
-test_files/genes_list.txt
+python cross_genes.py test_files/genes_list2.txt test_files/genes_list3.txt test_files/genes_list.txt
 ```
 
 Prints a list with the genes common to all the gene_list files and three more
