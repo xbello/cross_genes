@@ -66,6 +66,14 @@ class TestCrossGenes(TestCase):
 
 class TestCrossPositions(TestCase):
     def setUp(self):
+        self.positions1 = [("chr1", "14930", "14930"),
+                           ("chr1", "762592", "762592"),
+                           ("chr1", "762601", "762601"),
+                           ("chr1", "792263", "792263")]
+        self.positions2 = [("chr1", "14930", "14930"),
+                           ("chr1", "762273", "762273"),
+                           ("chr1", "762601", "762601"),
+                           ("chr1", "792263", "792263")]
 
         self.filename1 = "test_files/CASE1.variants.tsv"
         self.filename2 = "test_files/CASE2.variants.tsv"
@@ -81,7 +89,19 @@ class TestCrossPositions(TestCase):
              ("chr1", "792263", "792263")])
 
     def test_common_variants(self):
-        self.fail()
+        self.assertCountEqual(
+            cg.common_variants(self.filename1, self.filename2).keys(),
+            [("Chr", "Start", "End"),
+             ("chr1", "14930", "14930"),
+             ("chr1", "762273", "762273"),
+             ("chr1", "762592", "762592"),
+             ("chr1", "762601", "762601"),
+             ("chr1", "792263", "792263")])
+
+    def test_different_variants(self):
+        self.assertCountEqual(
+            cg.difference_two(self.positions1, self.positions2),
+            [("chr1", "762592", "762592")])
 
     def test_load_variants(self):
         self.assertCountEqual(cg.load_variants(self.filename1).keys(),
