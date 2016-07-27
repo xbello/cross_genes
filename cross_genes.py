@@ -12,14 +12,21 @@ def common_positions(*filenames):
     return reduce(cross_two, variants_lists)
 
 
-def common_variants(*filenames):
-    """Return a dict with the common variants for two TSV files."""
+def cross_variants(*filenames, exclude=False):
+    """Return a dict with the common variants for two TSV files.
+
+    If exclude is True, return the variants unique to the first element instead.
+
+    """
     variants_lists = [load_variants(f) for f in filenames]
 
-    common_pos = reduce(cross_two, variants_lists)
+    if exclude:
+        pos = reduce(difference_two, variants_lists)
+    else:
+        pos = reduce(cross_two, variants_lists)
 
     # The common positions HAS TO BE in the first, or any, variant_list.
-    return {pos: variants_lists[0][pos] for pos in common_pos}
+    return {_: variants_lists[0][_] for _ in pos}
 
 
 def cross_combine(*filenames):
@@ -49,15 +56,6 @@ def cross_multiple_files(*filenames):
 def difference_two(first, second):
     """Return the variants unique to the first set of genes."""
     return list(set(first) - set(second))
-
-
-def different_variants(*filenames):
-    """Return a dict with the different variants per file."""
-    variants_lists = [load_variants(f) for f in filenames]
-
-    different_pos = reduce(difference_two, variants_lists)
-
-    return {pos: variants_lists[0][pos] for pos in different_pos}
 
 
 def load_list(filename):

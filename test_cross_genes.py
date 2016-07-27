@@ -90,7 +90,7 @@ class TestCrossPositions(TestCase):
 
     def test_common_variants(self):
         self.assertCountEqual(
-            cg.common_variants(self.filename1, self.filename2).keys(),
+            cg.cross_variants(self.filename1, self.filename2).keys(),
             [("Chr", "Start", "End"),
              ("chr1", "14930", "14930"),
              ("chr1", "762273", "762273"),
@@ -108,7 +108,8 @@ class TestCrossPositions(TestCase):
 
     def test_different_variants_from_files(self):
         self.assertCountEqual(
-            cg.different_variants(self.filename2, self.filename1).keys(),
+            cg.cross_variants(
+                self.filename2, self.filename1, exclude=True).keys(),
             [("chr1", "792480", "792480"),
              ("chr1", "808922", "808922"),
              ("chr1", "808928", "808928"),
