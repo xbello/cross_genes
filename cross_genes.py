@@ -9,7 +9,7 @@ def common_positions(*filenames):
     """Return a list with the common positions for two TSV files."""
     variants_lists = [load_variants(f) for f in filenames]
 
-    return cross_multiple(*[_.keys() for _ in variants_lists])
+    return reduce(cross_two, variants_lists)
 
 
 def cross_combine(*filenames):
@@ -22,11 +22,6 @@ def cross_combine(*filenames):
         pair_dicts[this_pair] = cross_multiple_files(*pair)
 
     return pair_dicts
-
-
-def cross_multiple(*gene_sets):
-    """Return the common genes between two or more sets of genes."""
-    return reduce(cross_two, gene_sets)
 
 
 def cross_two(first, second):

@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import cross_genes as cg
 
-from cross_genes import cross_multiple, cross_two
+from cross_genes import cross_two
 from cross_genes import cross_combine, cross_multiple_files
 from cross_genes import load_list
 
@@ -21,12 +21,6 @@ class TestCrossGenes(TestCase):
         self.assertCountEqual(cross_two(self.genes_1, self.genes_2),
                               ["GENE1", "GENE2"])
         self.assertCountEqual(cross_two(self.genes_1, self.genes_3),
-                              ["GENE1"])
-
-    def test_cross_multiple(self):
-        self.assertCountEqual(cross_multiple(self.genes_1,
-                                             self.genes_2,
-                                             self.genes_3),
                               ["GENE1"])
 
     def test_cross_multiple_files(self):
@@ -76,7 +70,7 @@ class TestCrossPositions(TestCase):
         self.filename1 = "test_files/CASE1.variants.tsv"
         self.filename2 = "test_files/CASE2.variants.tsv"
 
-    def test_common_variants_are_found(self):
+    def test_common_positions_are_found(self):
         self.assertCountEqual(
             cg.common_positions(self.filename1, self.filename2),
             [("Chr", "Start", "End"),
@@ -85,6 +79,9 @@ class TestCrossPositions(TestCase):
              ("chr1", "762592", "762592"),
              ("chr1", "762601", "762601"),
              ("chr1", "792263", "792263")])
+
+    def test_common_variants(self):
+        self.fail()
 
     def test_load_variants(self):
         self.assertCountEqual(cg.load_variants(self.filename1).keys(),
