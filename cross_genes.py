@@ -5,6 +5,13 @@ from itertools import combinations
 import os
 
 
+def common_positions(*filenames):
+    """Return a list with the common positions for two TSV files."""
+    variants_lists = [load_variants(f) for f in filenames]
+
+    return cross_multiple(*[_.keys() for _ in variants_lists])
+
+
 def cross_combine(*filenames):
     """Return a dict with all combined two vs two crossings."""
     pair_dicts = {}
@@ -48,6 +55,18 @@ def load_list(filename):
             genes.extend(gene)
 
     return genes
+
+
+def load_variants(filename):
+    """Return a dict with the variants in a filename."""
+    with open(filename) as f1:
+        variants = {}
+        for line in f1:
+            variant = line.rstrip().split("\t")
+            variants[tuple(variant[:3])] = variant
+
+    return variants
+
 
 if __name__ == "__main__":
     import argparse
