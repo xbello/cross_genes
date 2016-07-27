@@ -81,7 +81,7 @@ class TestCrossPositions(TestCase):
     def test_common_positions_are_found(self):
         self.assertCountEqual(
             cg.common_positions(self.filename1, self.filename2),
-            [("Chr", "Start", "End"),
+            ["header",
              ("chr1", "14930", "14930"),
              ("chr1", "762273", "762273"),
              ("chr1", "762592", "762592"),
@@ -91,7 +91,7 @@ class TestCrossPositions(TestCase):
     def test_common_variants(self):
         self.assertCountEqual(
             cg.cross_variants(self.filename1, self.filename2).keys(),
-            [("Chr", "Start", "End"),
+            ["header",
              ("chr1", "14930", "14930"),
              ("chr1", "762273", "762273"),
              ("chr1", "762592", "762592"),
@@ -110,7 +110,8 @@ class TestCrossPositions(TestCase):
         self.assertCountEqual(
             cg.cross_variants(
                 self.filename2, self.filename1, exclude=True).keys(),
-            [("chr1", "792480", "792480"),
+            ["header",
+             ("chr1", "792480", "792480"),
              ("chr1", "808922", "808922"),
              ("chr1", "808928", "808928"),
              ("chr1", "871334", "871334"),
@@ -119,7 +120,7 @@ class TestCrossPositions(TestCase):
 
     def test_load_variants(self):
         self.assertCountEqual(cg.load_variants(self.filename1).keys(),
-                              [("Chr", "Start", "End"),
+                              ["header",
                                ("chr1", "14907", "14907"),
                                ("chr1", "14930", "14930"),
                                ("chr1", "69511", "69511"),

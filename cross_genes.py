@@ -18,15 +18,17 @@ def cross_variants(*filenames, exclude=False):
     If exclude is True, return the variants unique to the first element instead.
 
     """
-    variants_lists = [load_variants(f) for f in filenames]
+    variants_list = [load_variants(f) for f in filenames]
 
     if exclude:
-        pos = reduce(difference_two, variants_lists)
+        pos = reduce(difference_two, variants_list)
+        if len(filenames) > 1:  # The header is not unique and was trimmed
+            pos.append("header")
     else:
-        pos = reduce(cross_two, variants_lists)
+        pos = reduce(cross_two, variants_list)
 
     # The common positions HAS TO BE in the first, or any, variant_list.
-    return {_: variants_lists[0][_] for _ in pos}
+    return {_: variants_list[0][_] for _ in pos}
 
 
 def cross_combine(*filenames):
@@ -77,12 +79,32 @@ def load_list(filename):
 def load_variants(filename):
     """Return a dict with the variants in a filename."""
     with open(filename) as f1:
-        variants = {}
+        variants = {"header": f1.readline().rstrip().split("\t")}
         for line in f1:
             variant = line.rstrip().split("\t")
             variants[tuple(variant[:3])] = variant
 
     return variants
+
+def main(args):
+    """Perform the CLI command."""
+    if args.variants:
+        var_bool = cross_variants(*args.filenames, exclude=args.exclusion)
+        print("\t".join([_ for _ in var_bool.pop("header")]))
+        for v in var_bool.values():
+            print("\t".join(v))
+    else:
+        if args.exclusion:
+            print("Not implemented for genes. Remove the --exclusion flag.")
+        else:
+            # Print the All-vs-All
+            for gene in cross_multiple_files(*args.filenames):
+                print(gene)
+            # Print the One-vs-One
+            for pair, genes in cross_combine(*args.filenames).items():
+                print(pair)
+                for gene in genes:
+                    print(gene)
 
 
 if __name__ == "__main__":
@@ -92,13 +114,13 @@ if __name__ == "__main__":
         description="Cross matches two or more files for common lines")
     parser.add_argument("filenames", nargs="+",
                         help="The name of the files to be crossmatched.")
+    parser.add_argument("--variants", action="store_true",
+                        help="""The files to be used are tsv/tab files with many
+                        columns. The three first must be chromosome, start and
+                        and end position.""")
+    parser.add_argument("--exclusion", action="store_true",
+                        help="""Perform an exclusion (items only in the first
+                        file) instead a common position search.""")
 
     args = parser.parse_args()
-    # Print the All-vs-All
-    for gene in cross_multiple_files(*args.filenames):
-        print(gene)
-    # Print the One-vs-One
-    for pair, genes in cross_combine(*args.filenames).items():
-        print(pair)
-        for gene in genes:
-            print(gene)
+    main(args)
