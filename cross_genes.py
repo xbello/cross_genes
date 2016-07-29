@@ -67,7 +67,7 @@ def load_list(filename):
      be considered.
 
     """
-    with open(filename) as f1:
+    with open(filename, encoding="utf-8", errors="replace") as f1:
         genes = []
         for line in f1:
             gene = line.rstrip().replace('"', "").split(";")
@@ -78,7 +78,7 @@ def load_list(filename):
 
 def load_variants(filename):
     """Return a dict with the variants in a filename."""
-    with open(filename) as f1:
+    with open(filename, encoding="utf-8", errors="replace") as f1:
         variants = {"header": f1.readline().rstrip().split("\t")}
         for line in f1:
             variant = line.rstrip().split("\t")
