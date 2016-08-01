@@ -12,15 +12,15 @@ def common_positions(*filenames):
     return reduce(cross_two, variants_lists)
 
 
-def cross_variants(*filenames, exclude=False):
+def cross_variants(*filenames, **kwargs):
     """Return a dict with the common variants for two TSV files.
 
-    If exclude is True, return the variants unique to the first element instead.
+    If exclude is True, return the variants unique to the first element.
 
     """
     variants_list = [load_variants(f) for f in filenames]
 
-    if exclude:
+    if kwargs.get("exclude"):
         pos = reduce(difference_two, variants_list)
         if len(filenames) > 1:  # The header is not unique and was trimmed
             pos.append("header")
@@ -67,24 +67,39 @@ def load_list(filename):
      be considered.
 
     """
-    with open(filename, encoding="utf-8", errors="replace") as f1:
-        genes = []
-        for line in f1:
-            gene = line.rstrip().replace('"', "").split(";")
-            genes.extend(gene)
+    try:
+        with open(filename, encoding="utf-8", errors="replace") as f1:
+            genes = []
+            for line in f1:
+                gene = line.rstrip().replace('"', "").split(";")
+                genes.extend(gene)
+    except TypeError:
+        with open(filename) as f1:
+            genes = []
+            for line in f1:
+                gene = line.rstrip().replace('"', "").split(";")
+                genes.extend(gene)
 
     return genes
 
 
 def load_variants(filename):
     """Return a dict with the variants in a filename."""
-    with open(filename, encoding="utf-8", errors="replace") as f1:
-        variants = {"header": f1.readline().rstrip().split("\t")}
-        for line in f1:
-            variant = line.rstrip().split("\t")
-            variants[tuple(variant[:3])] = variant
+    try:
+        with open(filename, encoding="utf-8", errors="replace") as f1:
+            variants = {"header": f1.readline().rstrip().split("\t")}
+            for line in f1:
+                variant = line.rstrip().split("\t")
+                variants[tuple(variant[:3])] = variant
+    except TypeError:
+        with open(filename) as f1:
+            variants = {"header": f1.readline().rstrip().split("\t")}
+            for line in f1:
+                variant = line.rstrip().split("\t")
+                variants[tuple(variant[:3])] = variant
 
     return variants
+
 
 def main(args):
     """Perform the CLI command."""
