@@ -33,19 +33,19 @@ Samples
 
 ```
 
-python cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants --exclusion
+python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants --exclusion
 ```
 
 Prints a .tsv output with the variants in CASE1 that are unique to that file.
 
 ```
-python cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants
+python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants
 ```
 
 Prints a .tsv output with the variants common to CASE1 and CASE2.
 
 ```
-python cross_genes.py test_files/genes_list2.txt test_files/genes_list3.txt test_files/genes_list.txt
+python3 cross_genes.py test_files/genes_list2.txt test_files/genes_list3.txt test_files/genes_list.txt
 ```
 
 Prints a list with the genes common to all the gene_list files and three more
