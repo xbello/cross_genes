@@ -4,7 +4,7 @@ from unittest import TestCase
 import cross_genes as cg
 
 
-class TestCrossGenes(TestCase):
+class TestWithCountItems(TestCase):
     def assertCountItemsEqual(self, *args, **kwargs):
         """Setup an intermediate for python 2.7 and 3 list testing."""
         try:
@@ -12,6 +12,8 @@ class TestCrossGenes(TestCase):
         except AttributeError:
             self.assertItemsEqual(*args, **kwargs)
 
+
+class TestCrossGenes(TestWithCountItems):
     def setUp(self):
         self.genes_1 = ["GENE1", "GENE2", "GENE3"]
         self.genes_2 = ["GENE1", "GENE2", "GENE4"]
@@ -71,14 +73,7 @@ class TestCrossGenes(TestCase):
              "PCDHA9", "NOP16"])
 
 
-class TestCrossPositions(TestCase):
-    def assertCountItemsEqual(self, *args, **kwargs):
-        """Setup an intermediate for python 2.7 and 3 list testing."""
-        try:
-            self.assertCountEqual(*args, **kwargs)
-        except AttributeError:
-            self.assertItemsEqual(*args, **kwargs)
-
+class TestCrossPositions(TestWithCountItems):
     def setUp(self):
         self.positions1 = [("chr1", "14930", "14930"),
                            ("chr1", "762592", "762592"),
