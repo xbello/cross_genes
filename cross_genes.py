@@ -98,10 +98,12 @@ def main(args):
             print("Not implemented for genes. Remove the --exclusion flag.")
         else:
             # Print the All-vs-All
+            print("All-vs-All")
             for gene in cross_multiple_files(*args.filenames):
                 print(gene)
             # Print the One-vs-One
             for pair, genes in cross_combine(*args.filenames).items():
+                print()
                 print(pair)
                 for gene in genes:
                     print(gene)
