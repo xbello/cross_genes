@@ -90,13 +90,13 @@ def load_variants(filename):
             variants = {"header": f1.readline().rstrip().split("\t")}
             for line in f1:
                 variant = line.rstrip().split("\t")
-                variants[tuple(variant[:3])] = variant
+                variants[tuple(variant[:5])] = variant
     except TypeError:
         with open(filename) as f1:
             variants = {"header": f1.readline().rstrip().split("\t")}
             for line in f1:
                 variant = line.rstrip().split("\t")
-                variants[tuple(variant[:3])] = variant
+                variants[tuple(variant[:5])] = variant
 
     return variants
 

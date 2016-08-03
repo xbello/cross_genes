@@ -75,14 +75,14 @@ class TestCrossGenes(TestWithCountItems):
 
 class TestCrossPositions(TestWithCountItems):
     def setUp(self):
-        self.positions1 = [("chr1", "14930", "14930"),
-                           ("chr1", "762592", "762592"),
-                           ("chr1", "762601", "762601"),
-                           ("chr1", "792263", "792263")]
-        self.positions2 = [("chr1", "14930", "14930"),
-                           ("chr1", "762273", "762273"),
-                           ("chr1", "762601", "762601"),
-                           ("chr1", "792263", "792263")]
+        self.positions1 = [("chr1", "14930", "14930", "A", "G"),
+                           ("chr1", "762592", "762592", "C", "G"),
+                           ("chr1", "762601", "762601", "T", "C"),
+                           ("chr1", "792263", "792263", "A", "G")]
+        self.positions2 = [("chr1", "14930", "14930", "A", "T"),  # Different
+                           ("chr1", "762273", "762273", "G", "A"),
+                           ("chr1", "762601", "762601", "T", "C"),
+                           ("chr1", "792263", "792263", "A", "G")]
 
         path = dirname(__file__)
 
@@ -93,38 +93,39 @@ class TestCrossPositions(TestWithCountItems):
         self.assertCountItemsEqual(
             cg.common_positions(self.filename1, self.filename2),
             ["header",
-             ("chr1", "14930", "14930"),
-             ("chr1", "762273", "762273"),
-             ("chr1", "762592", "762592"),
-             ("chr1", "762601", "762601"),
-             ("chr1", "792263", "792263")])
+             ("chr1", "14930", "14930", "A", "G"),
+             ("chr1", "762273", "762273", "G", "A"),
+             ("chr1", "762592", "762592", "C", "G"),
+             ("chr1", "792263", "792263", "A", "G")])
 
     def test_common_variants(self):
         self.assertCountItemsEqual(
             cg.cross_variants(self.filename1, self.filename2).keys(),
             ["header",
-             ("chr1", "14930", "14930"),
-             ("chr1", "762273", "762273"),
-             ("chr1", "762592", "762592"),
-             ("chr1", "762601", "762601"),
-             ("chr1", "792263", "792263")])
+             ("chr1", "14930", "14930", "A", "G"),
+             ("chr1", "762273", "762273", "G", "A"),
+             ("chr1", "762592", "762592", "C", "G"),
+             ("chr1", "792263", "792263", "A", "G")])
 
     def test_different_variants(self):
         self.assertCountItemsEqual(
             cg.difference_two(self.positions1, self.positions2),
-            [("chr1", "762592", "762592")])
+            [("chr1", "14930", "14930", "A", "G"),
+             ("chr1", "762592", "762592", "C", "G")])
         self.assertCountItemsEqual(
             cg.difference_two(self.positions2, self.positions1),
-            [("chr1", "762273", "762273")])
+            [("chr1", "14930", "14930", "A", "T"),
+             ("chr1", "762273", "762273", "G", "A")])
 
     def test_different_variants_from_files(self):
         result = ["header",
-                  ("chr1", "792480", "792480"),
-                  ("chr1", "808922", "808922"),
-                  ("chr1", "808928", "808928"),
-                  ("chr1", "871334", "871334"),
-                  ("chr1", "876499", "876499"),
-                  ("chr1", "877831", "877831")]
+                  ("chr1", "762632", "762632", "T", "A"),
+                  ("chr1", "792480", "792480", "C", "T"),
+                  ("chr1", "808922", "808922", "G", "A"),
+                  ("chr1", "808928", "808928", "C", "T"),
+                  ("chr1", "871334", "871334", "G", "T"),
+                  ("chr1", "876499", "876499", "A", "G"),
+                  ("chr1", "877831", "877831", "T", "C")]
 
         self.assertCountItemsEqual(
             cg.cross_variants(
@@ -133,14 +134,14 @@ class TestCrossPositions(TestWithCountItems):
 
     def test_load_variants(self):
         result = ["header",
-                  ("chr1", "14907", "14907"),
-                  ("chr1", "14930", "14930"),
-                  ("chr1", "69511", "69511"),
-                  ("chr1", "762273", "762273"),
-                  ("chr1", "762589", "762589"),
-                  ("chr1", "762592", "762592"),
-                  ("chr1", "762601", "762601"),
-                  ("chr1", "762632", "762632"),
-                  ("chr1", "792263", "792263")]
+                  ("chr1", "14907", "14907", "A", "G"),
+                  ("chr1", "14930", "14930", "A", "G"),
+                  ("chr1", "69511", "69511", "A", "G"),
+                  ("chr1", "762273", "762273", "G", "A"),
+                  ("chr1", "762589", "762589", "G", "C"),
+                  ("chr1", "762592", "762592", "C", "G"),
+                  ("chr1", "762601", "762601", "T", "C"),
+                  ("chr1", "762632", "762632", "T", "C"),
+                  ("chr1", "792263", "792263", "A", "G")]
         self.assertCountItemsEqual(cg.load_variants(self.filename1).keys(),
                                    result)
