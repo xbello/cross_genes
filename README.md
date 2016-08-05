@@ -23,8 +23,8 @@ Usage
     optional arguments:
       -h, --help   show this help message and exit
       --variants   [Deprecated] The files to be used are tsv/tab files with many
-                   columns. The three first must be chromosome, start and and end
-                   position.
+                   columns. The five first must be chromosome, start, end and two
+                   alleles.
       --exclusion  Perform an exclusion (items only in the first file) instead a
                    common position search.
 ```
@@ -35,7 +35,6 @@ Samples
 Print a .tsv output with the variants in CASE1 that are unique to that file:
 
 ```
-
 python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --exclusion
 ```
 
