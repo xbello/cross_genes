@@ -146,9 +146,9 @@ if __name__ == "__main__":
     parser.add_argument("filenames", nargs="+",
                         help="The name of the files to be crossmatched.")
     parser.add_argument("--variants", action="store_true",
-                        help="""[Deprecated] The files to be used are tsv/tab files
-                        with many columns. The three first must be chromosome,
-                        start and and end position.""")
+                        help="""[Deprecated] The files to be used are tsv/tab files with many
+                        columns. The five first must be chromosome, start, end and two
+                        alleles.""")
     parser.add_argument("--exclusion", action="store_true",
                         help="""Perform an exclusion (items only in the first
                         file) instead a common position search.""")
