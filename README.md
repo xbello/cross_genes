@@ -31,22 +31,28 @@ Usage
 Samples
 =======
 
+Print a .tsv output with the variants in CASE1 that are unique to that file:
+
 ```
 
 python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants --exclusion
 ```
 
-Prints a .tsv output with the variants in CASE1 that are unique to that file.
+Print a .tsv output with the variants common to CASE1 and CASE2:
 
 ```
 python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants
 ```
 
-Prints a .tsv output with the variants common to CASE1 and CASE2.
+Print a list with the genes common to all the gene_list files and three more
+lists with the genes common to each posible pair (combination) of files:
 
 ```
 python3 cross_genes.py test_files/genes_list2.txt test_files/genes_list3.txt test_files/genes_list.txt
 ```
 
-Prints a list with the genes common to all the gene_list files and three more
-lists with the genes common to each posible pair (combination) of files.
+The same as before, but using filematchers like * or ?:
+
+```
+python3 cross_genes.py test_files/*genes_list*.txt
+```

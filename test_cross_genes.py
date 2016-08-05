@@ -145,3 +145,12 @@ class TestCrossPositions(TestWithCountItems):
                   ("chr1", "792263", "792263", "A", "G")]
         self.assertCountItemsEqual(cg.load_variants(self.filename1).keys(),
                                    result)
+
+class TestFileDetection(TestCase):
+    def test_is_variants(self):
+        path = dirname(__file__)
+        genes = join(path, "test_files/genes_list.txt")
+        variants = join(path, "test_files/CASE1.variants.tsv")
+
+        self.assertTrue(cg.is_variants(variants))
+        self.assertFalse(cg.is_variants(genes))

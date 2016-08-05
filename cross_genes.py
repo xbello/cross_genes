@@ -60,6 +60,15 @@ def difference_two(first, second):
     return list(set(first) - set(second))
 
 
+def is_variants(filename):
+    """Return true if a filename has at leas five columns, else return false."""
+    with open(filename) as f:
+        cols = f.readline().split()
+        if len(cols) > 5:
+            return True
+    return False
+
+
 def load_list(filename):
     """Return a list with the genes in a filename.
 
@@ -140,4 +149,5 @@ if __name__ == "__main__":
                         file) instead a common position search.""")
 
     args = parser.parse_args()
+
     main(args)
