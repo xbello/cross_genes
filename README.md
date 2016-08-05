@@ -22,8 +22,9 @@ Usage
 
     optional arguments:
       -h, --help   show this help message and exit
-      --variants   The files to be used are tsv/tab files with many columns. The
-                   three first must be chromosome, start and and end position.
+      --variants   [Deprecated] The files to be used are tsv/tab files with many
+                   columns. The three first must be chromosome, start and and end
+                   position.
       --exclusion  Perform an exclusion (items only in the first file) instead a
                    common position search.
 ```
@@ -35,13 +36,13 @@ Print a .tsv output with the variants in CASE1 that are unique to that file:
 
 ```
 
-python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants --exclusion
+python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --exclusion
 ```
 
 Print a .tsv output with the variants common to CASE1 and CASE2:
 
 ```
-python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --variants
+python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv
 ```
 
 Print a list with the genes common to all the gene_list files and three more

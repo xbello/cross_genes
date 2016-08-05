@@ -3,7 +3,12 @@
 from functools import reduce
 from itertools import combinations
 import os
+import warnings
 
+
+def _deprecation(message):
+    warnings.simplefilter('always', DeprecationWarning)
+    warnings.warn(message, category=DeprecationWarning)
 
 def common_positions(*filenames):
     """Return a list with the common positions for two TSV files."""
@@ -112,7 +117,7 @@ def load_variants(filename):
 
 def main(args):
     """Perform the CLI command."""
-    if args.variants:
+    if all([is_variants(filename) for filename in args.filenames]):
         var_bool = cross_variants(*args.filenames, exclude=args.exclusion)
         print("\t".join([_ for _ in var_bool.pop("header")]))
         for v in var_bool.values():
@@ -141,9 +146,9 @@ if __name__ == "__main__":
     parser.add_argument("filenames", nargs="+",
                         help="The name of the files to be crossmatched.")
     parser.add_argument("--variants", action="store_true",
-                        help="""The files to be used are tsv/tab files with many
-                        columns. The three first must be chromosome, start and
-                        and end position.""")
+                        help="""[Deprecated] The files to be used are tsv/tab files
+                        with many columns. The three first must be chromosome,
+                        start and and end position.""")
     parser.add_argument("--exclusion", action="store_true",
                         help="""Perform an exclusion (items only in the first
                         file) instead a common position search.""")
@@ -151,3 +156,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args)
+
+    if args.variants:
+        _deprecation("The --variants flag is no longer needed. Any file with " +
+                     "five or more columns is assumed to be a variant file.")
