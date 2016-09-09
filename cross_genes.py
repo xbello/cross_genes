@@ -122,40 +122,48 @@ def load_variants(filename):
     return variants
 
 
+def print_genes(*filenames):
+    """Print the genes filenames."""
+    # Print the All-vs-All
+    print("All-vs-All")
+    for gene in cross_multiple_genes(*filenames):
+        print(gene)
+    # Print the One-vs-One
+    for pair, genes in cross_combine_genes(*filenames).items():
+        print()
+        print(pair)
+        for gene in genes:
+            print(gene)
+
+
 def print_variants(variants_dict):
     """Print the dictionary of variants."""
     for case, variants in variants_dict.items():
-        print(case)
-        print("\t".join([_ for _ in variants.pop("header")]))
-        for variant in variants.values():
-            print("\t".join(variant))
+        with open(case + ".tsv", "w") as output:
+            output.write("\t".join([_ for _ in variants.pop("header")]))
+            output.write("\n")
+            for variant in variants.values():
+                output.write("\t".join(variant))
+                output.write("\n")
+        print("Writen {}".format(case + ".tsv"))
 
 
-def main(args):
+def main(n_args):
     """Perform the CLI command."""
-    if all([is_variants(filename) for filename in args.filenames]):
+    if all([is_variants(filename) for filename in n_args.filenames]):
         if len(args.filenames) > 2:
             if args.exclusion:
                 raise Exception(
                     "Only can exclude 2 files. Remove the --exclusion flag.")
-        var_bool = cross_combine_variants(*args.filenames,
-                                          exclude=args.exclusion)
+        var_bool = cross_combine_variants(*n_args.filenames,
+                                          exclude=n_args.exclusion)
         print_variants(var_bool)
     else:
         if args.exclusion:
             raise Exception(
                 "Not implemented for genes. Remove the --exclusion flag.")
         else:
-            # Print the All-vs-All
-            print("All-vs-All")
-            for gene in cross_multiple_genes(*args.filenames):
-                print(gene)
-            # Print the One-vs-One
-            for pair, genes in cross_combine_genes(*args.filenames).items():
-                print()
-                print(pair)
-                for gene in genes:
-                    print(gene)
+            print_genes(*n_args.filenames)
 
 
 if __name__ == "__main__":
