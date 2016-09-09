@@ -26,37 +26,38 @@ class TestCrossGenes(TestWithCountItems):
         self.filename3 = join(path, "test_files/genes_list3.txt")
 
     def test_cross_two(self):
-        self.assertCountItemsEqual(cg.cross_two(self.genes_1, self.genes_2),
-                                   ["GENE1", "GENE2"])
-        self.assertCountItemsEqual(cg.cross_two(self.genes_1, self.genes_3),
-                                   ["GENE1"])
+        self.assertCountItemsEqual(
+            cg.cross_two_genes(self.genes_1, self.genes_2), ["GENE1", "GENE2"])
+        self.assertCountItemsEqual(
+            cg.cross_two_genes(self.genes_1, self.genes_3), ["GENE1"])
 
     def test_cross_multiple_files(self):
         self.assertCountItemsEqual(
-            cg.cross_multiple_files(self.filename1,
+            cg.cross_multiple_genes(self.filename1,
                                     self.filename2,
                                     self.filename3),
             ["PCDHA9", "PCDHA1", "PCDHA2", "PCDHA8", "NOP16"])
 
     def test_cross_one_file(self):
         self.assertCountItemsEqual(
-            cg.cross_multiple_files(self.filename1),
+            cg.cross_multiple_genes(self.filename1),
             ["NOC2L", "SMYD2", "OR2T35", "PCDHA9", "PCDHA1", "PCDHA2",
              "PCDHA8", "NOP16"])
 
     def test_cross_two_files(self):
         self.assertCountItemsEqual(
-            cg.cross_multiple_files(self.filename1, self.filename2),
+            cg.cross_multiple_genes(self.filename1, self.filename2),
             ["NOC2L", "PCDHA1", "PCDHA2", "PCDHA8", "PCDHA9", "NOP16"])
         self.assertCountItemsEqual(
-            cg.cross_multiple_files(self.filename1, self.filename3),
+            cg.cross_multiple_genes(self.filename1, self.filename3),
             ["PCDHA9", "PCDHA1", "PCDHA2", "PCDHA8", "NOP16"])
 
     def test_cross_combine_multiple_files(self):
         # When comparing multiple files, the user want to know all-vs-all and
         #  one-vs-one individually.
         self.assertCountItemsEqual(
-            cg.cross_combine(self.filename1, self.filename2, self.filename3),
+            cg.cross_combine_genes(
+                self.filename1, self.filename2, self.filename3),
             {"genes_list-genes_list2":
              ["NOC2L", "PCDHA1", "PCDHA2", "PCDHA8", "PCDHA9", "NOP16"],
              "genes_list2-genes_list3":
@@ -68,7 +69,7 @@ class TestCrossGenes(TestWithCountItems):
 
     def test_load_list(self):
         self.assertCountItemsEqual(
-            cg.load_list(self.filename1),
+            cg.load_genes(self.filename1),
             ["NOC2L", "SMYD2", "OR2T35", "PCDHA1", "PCDHA2", "PCDHA8",
              "PCDHA9", "NOP16"])
 
@@ -89,15 +90,6 @@ class TestCrossPositions(TestWithCountItems):
         self.filename1 = join(path, "test_files/CASE1.variants.tsv")
         self.filename2 = join(path, "test_files/CASE2.variants.tsv")
 
-    def test_common_positions_are_found(self):
-        self.assertCountItemsEqual(
-            cg.common_positions(self.filename1, self.filename2),
-            ["header",
-             ("chr1", "14930", "14930", "A", "G"),
-             ("chr1", "762273", "762273", "G", "A"),
-             ("chr1", "762592", "762592", "C", "G"),
-             ("chr1", "792263", "792263", "A", "G")])
-
     def test_common_variants(self):
         self.assertCountItemsEqual(
             cg.cross_variants(self.filename1, self.filename2).keys(),
@@ -109,11 +101,11 @@ class TestCrossPositions(TestWithCountItems):
 
     def test_different_variants(self):
         self.assertCountItemsEqual(
-            cg.difference_two(self.positions1, self.positions2),
+            cg.difference_two_genes(self.positions1, self.positions2),
             [("chr1", "14930", "14930", "A", "G"),
              ("chr1", "762592", "762592", "C", "G")])
         self.assertCountItemsEqual(
-            cg.difference_two(self.positions2, self.positions1),
+            cg.difference_two_genes(self.positions2, self.positions1),
             [("chr1", "14930", "14930", "A", "T"),
              ("chr1", "762273", "762273", "G", "A")])
 
@@ -173,15 +165,6 @@ class TestCrossMultipleFiles(TestWithCountItems):
         self.filename1 = join(path, "test_files/CASE1.variants.tsv")
         self.filename2 = join(path, "test_files/CASE2.variants.tsv")
         self.filename3 = join(path, "test_files/CASE3.variants.tsv")
-
-    def test_common_positions_are_found(self):
-        self.assertCountItemsEqual(
-            cg.common_positions(
-                self.filename1, self.filename2, self.filename3),
-            ["header",
-             ("chr1", "14930", "14930", "A", "G"),
-             ("chr1", "762273", "762273", "G", "A"),
-             ("chr1", "762592", "762592", "C", "G")])
 
     def test_common_variants(self):
         self.assertCountItemsEqual(

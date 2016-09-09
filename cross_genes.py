@@ -12,13 +12,6 @@ def _deprecation(message):
     warnings.warn(message, category=DeprecationWarning)
 
 
-def common_positions(*filenames):
-    """Return a list with the common positions for two TSV files."""
-    variants_lists = [load_variants(f) for f in filenames]
-
-    return reduce(cross_two, variants_lists)
-
-
 def cross_variants(*filenames, **kwargs):
     """Return a dict with the common variants for two TSV files.
 
@@ -28,24 +21,24 @@ def cross_variants(*filenames, **kwargs):
     variants_list = [load_variants(f) for f in filenames]
 
     if kwargs.get("exclude"):
-        pos = reduce(difference_two, variants_list)
+        pos = reduce(difference_two_genes, variants_list)
         if len(filenames) > 1:  # The header is not unique and was trimmed
             pos.append("header")
     else:
-        pos = reduce(cross_two, variants_list)
+        pos = reduce(cross_two_genes, variants_list)
 
     # The common positions HAS TO BE in the first, or any, variant_list.
     return {_: variants_list[0][_] for _ in pos}
 
 
-def cross_combine(*filenames, **kwargs):
+def cross_combine_genes(*filenames, **kwargs):
     """Return a dict with all combined two vs two crossings."""
     pair_dicts = {}
     for pair in combinations(filenames, 2):
         # Set the filenames to A-B.
         this_pair = "-".join(
             [os.path.splitext(os.path.basename(_))[0] for _ in pair])
-        pair_dicts[this_pair] = cross_multiple_files(*pair)
+        pair_dicts[this_pair] = cross_multiple_genes(*pair)
 
     return pair_dicts
 
@@ -62,19 +55,19 @@ def cross_combine_variants(*filenames, **kwargs):
     return pair_dicts
 
 
-def cross_two(first, second):
+def cross_two_genes(first, second):
     """Return the common genes between two sets of genes."""
     return list(set(first) & set(second))
 
 
-def cross_multiple_files(*filenames):
+def cross_multiple_genes(*filenames):
     """Return a list with the common genes between multiple archives."""
-    genes_lists = [load_list(f) for f in filenames]
+    genes_lists = [load_genes(f) for f in filenames]
 
-    return reduce(cross_two, genes_lists)
+    return reduce(cross_two_genes, genes_lists)
 
 
-def difference_two(first, second):
+def difference_two_genes(first, second):
     """Return the variants unique to the first set of genes."""
     return list(set(first) - set(second))
 
@@ -88,7 +81,7 @@ def is_variants(filename):
     return False
 
 
-def load_list(filename):
+def load_genes(filename):
     """Return a list with the genes in a filename.
 
     Some gene names are multiple, like "ABCD, ABCE_1", everyone of them should
@@ -137,29 +130,28 @@ def print_variants(variants_dict):
         for variant in variants.values():
             print("\t".join(variant))
 
+
 def main(args):
     """Perform the CLI command."""
     if all([is_variants(filename) for filename in args.filenames]):
         if len(args.filenames) > 2:
             if args.exclusion:
-                print("Only can exclude 2 files. Remove the --exclusion flag.")
-            else:
-                var_bool = cross_combine_variants(*args.filenames)
-                print_variants(var_bool)
-        else:
-            var_bool = cross_combine_variants(*args.filenames,
-                                              exclude=args.exclusion)
-            print_variants(var_bool)
+                raise Exception(
+                    "Only can exclude 2 files. Remove the --exclusion flag.")
+        var_bool = cross_combine_variants(*args.filenames,
+                                          exclude=args.exclusion)
+        print_variants(var_bool)
     else:
         if args.exclusion:
-            print("Not implemented for genes. Remove the --exclusion flag.")
+            raise Exception(
+                "Not implemented for genes. Remove the --exclusion flag.")
         else:
             # Print the All-vs-All
             print("All-vs-All")
-            for gene in cross_multiple_files(*args.filenames):
+            for gene in cross_multiple_genes(*args.filenames):
                 print(gene)
             # Print the One-vs-One
-            for pair, genes in cross_combine(*args.filenames).items():
+            for pair, genes in cross_combine_genes(*args.filenames).items():
                 print()
                 print(pair)
                 for gene in genes:
