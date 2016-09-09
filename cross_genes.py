@@ -12,6 +12,14 @@ def _deprecation(message):
     warnings.warn(message, category=DeprecationWarning)
 
 
+def open2(*args, **kwargs):
+    """Return a handler to open files both in 2.7 and > 3."""
+    try:
+        return open(*args, **kwargs)
+    except TypeError:
+        return open(*args)
+
+
 def cross_variants(*filenames, **kwargs):
     """Return a dict with the common variants for two TSV files.
 
@@ -88,36 +96,22 @@ def load_genes(filename):
      be considered.
 
     """
-    try:
-        with open(filename, encoding="utf-8", errors="replace") as f1:
-            genes = []
-            for line in f1:
-                gene = line.rstrip().replace('"', "").split(";")
-                genes.extend(gene)
-    except TypeError:
-        with open(filename) as f1:
-            genes = []
-            for line in f1:
-                gene = line.rstrip().replace('"', "").split(";")
-                genes.extend(gene)
+    with open2(filename, encoding="utf-8", errors="replace") as f1:
+        genes = []
+        for line in f1:
+            gene = line.rstrip().replace('"', "").split(";")
+            genes.extend(gene)
 
     return genes
 
 
 def load_variants(filename):
     """Return a dict with the variants in a filename."""
-    try:
-        with open(filename, encoding="utf-8", errors="replace") as f1:
-            variants = {"header": f1.readline().rstrip().split("\t")}
-            for line in f1:
-                variant = line.rstrip().split("\t")
-                variants[tuple(variant[:5])] = variant
-    except TypeError:
-        with open(filename) as f1:
-            variants = {"header": f1.readline().rstrip().split("\t")}
-            for line in f1:
-                variant = line.rstrip().split("\t")
-                variants[tuple(variant[:5])] = variant
+    with open2(filename, encoding="utf-8", errors="replace") as f1:
+        variants = {"header": f1.readline().rstrip().split("\t")}
+        for line in f1:
+            variant = line.rstrip().split("\t")
+            variants[tuple(variant[:5])] = variant
 
     return variants
 
