@@ -146,6 +146,7 @@ class TestCrossPositions(TestWithCountItems):
         self.assertCountItemsEqual(cg.load_variants(self.filename1).keys(),
                                    result)
 
+
 class TestFileDetection(TestCase):
     def test_is_variants(self):
         path = dirname(__file__)
@@ -154,3 +155,50 @@ class TestFileDetection(TestCase):
 
         self.assertTrue(cg.is_variants(variants))
         self.assertFalse(cg.is_variants(genes))
+
+
+class TestCrossMultipleFiles(TestWithCountItems):
+    def setUp(self):
+        self.positions1 = [("chr1", "14930", "14930", "A", "G"),
+                           ("chr1", "762592", "762592", "C", "G"),
+                           ("chr1", "762601", "762601", "T", "C"),
+                           ("chr1", "792263", "792263", "A", "G")]
+        self.positions2 = [("chr1", "14930", "14930", "A", "T"),  # Different
+                           ("chr1", "762273", "762273", "G", "A"),
+                           ("chr1", "762601", "762601", "T", "C"),
+                           ("chr1", "792263", "792263", "A", "G")]
+
+        path = dirname(__file__)
+
+        self.filename1 = join(path, "test_files/CASE1.variants.tsv")
+        self.filename2 = join(path, "test_files/CASE2.variants.tsv")
+        self.filename3 = join(path, "test_files/CASE3.variants.tsv")
+
+    def test_common_positions_are_found(self):
+        self.assertCountItemsEqual(
+            cg.common_positions(
+                self.filename1, self.filename2, self.filename3),
+            ["header",
+             ("chr1", "14930", "14930", "A", "G"),
+             ("chr1", "762273", "762273", "G", "A"),
+             ("chr1", "762592", "762592", "C", "G")])
+
+    def test_common_variants(self):
+        self.assertCountItemsEqual(
+            cg.cross_variants(
+                self.filename1, self.filename2, self.filename3).keys(),
+            ["header",
+             ("chr1", "14930", "14930", "A", "G"),
+             ("chr1", "762273", "762273", "G", "A"),
+             ("chr1", "762592", "762592", "C", "G")])
+
+    def test_different_variants(self):
+        variants = cg.cross_combine_variants(
+            self.filename1, self.filename2, self.filename3)
+        self.assertCountItemsEqual(variants.keys(),
+                                   ["CASE1.variants-CASE2.variants",
+                                    "CASE1.variants-CASE3.variants",
+                                    "CASE2.variants-CASE3.variants"])
+        self.assertEqual(len(variants["CASE1.variants-CASE2.variants"]), 5)
+        self.assertEqual(len(variants["CASE1.variants-CASE3.variants"]), 9)
+        self.assertEqual(len(variants["CASE2.variants-CASE3.variants"]), 4)

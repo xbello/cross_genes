@@ -7,8 +7,10 @@ import warnings
 
 
 def _deprecation(message):
+    """Allow DeprecationWarnings to show."""
     warnings.simplefilter('always', DeprecationWarning)
     warnings.warn(message, category=DeprecationWarning)
+
 
 def common_positions(*filenames):
     """Return a list with the common positions for two TSV files."""
@@ -36,7 +38,7 @@ def cross_variants(*filenames, **kwargs):
     return {_: variants_list[0][_] for _ in pos}
 
 
-def cross_combine(*filenames):
+def cross_combine(*filenames, **kwargs):
     """Return a dict with all combined two vs two crossings."""
     pair_dicts = {}
     for pair in combinations(filenames, 2):
@@ -44,6 +46,18 @@ def cross_combine(*filenames):
         this_pair = "-".join(
             [os.path.splitext(os.path.basename(_))[0] for _ in pair])
         pair_dicts[this_pair] = cross_multiple_files(*pair)
+
+    return pair_dicts
+
+
+def cross_combine_variants(*filenames, **kwargs):
+    """Return a dict with all combined two vs two crossings of variants."""
+    pair_dicts = {}
+    for pair in combinations(filenames, 2):
+        # Set the filenames to A-B.
+        this_pair = "-".join(
+            [os.path.splitext(os.path.basename(_))[0] for _ in pair])
+        pair_dicts[this_pair] = cross_variants(*pair, **kwargs)
 
     return pair_dicts
 
@@ -66,7 +80,7 @@ def difference_two(first, second):
 
 
 def is_variants(filename):
-    """Return true if a filename has at leas five columns, else return false."""
+    """Return true if filename has at leas five columns, else return false."""
     with open(filename) as f:
         cols = f.readline().split()
         if len(cols) > 5:
@@ -115,13 +129,27 @@ def load_variants(filename):
     return variants
 
 
+def print_variants(variants_dict):
+    """Print the dictionary of variants."""
+    for case, variants in variants_dict.items():
+        print(case)
+        print("\t".join([_ for _ in variants.pop("header")]))
+        for variant in variants.values():
+            print("\t".join(variant))
+
 def main(args):
     """Perform the CLI command."""
     if all([is_variants(filename) for filename in args.filenames]):
-        var_bool = cross_variants(*args.filenames, exclude=args.exclusion)
-        print("\t".join([_ for _ in var_bool.pop("header")]))
-        for v in var_bool.values():
-            print("\t".join(v))
+        if len(args.filenames) > 2:
+            if args.exclusion:
+                print("Only can exclude 2 files. Remove the --exclusion flag.")
+            else:
+                var_bool = cross_combine_variants(*args.filenames)
+                print_variants(var_bool)
+        else:
+            var_bool = cross_combine_variants(*args.filenames,
+                                              exclude=args.exclusion)
+            print_variants(var_bool)
     else:
         if args.exclusion:
             print("Not implemented for genes. Remove the --exclusion flag.")
@@ -145,10 +173,11 @@ if __name__ == "__main__":
         description="Cross matches two or more files for common lines")
     parser.add_argument("filenames", nargs="+",
                         help="The name of the files to be crossmatched.")
-    parser.add_argument("--variants", action="store_true",
-                        help="""[Deprecated] The files to be used are tsv/tab files with many
-                        columns. The five first must be chromosome, start, end and two
-                        alleles.""")
+    parser.add_argument(
+        "--variants", action="store_true",
+        help="""[Deprecated] The files to be used are tsv/tab files with many
+        columns. The five first must be chromosome, start, end and two
+        alleles.""")
     parser.add_argument("--exclusion", action="store_true",
                         help="""Perform an exclusion (items only in the first
                         file) instead a common position search.""")
@@ -158,5 +187,5 @@ if __name__ == "__main__":
     main(args)
 
     if args.variants:
-        _deprecation("The --variants flag is no longer needed. Any file with " +
-                     "five or more columns is assumed to be a variant file.")
+        _deprecation("The --variants flag is no longer needed. Any file with" +
+                     " five or more columns is assumed to be a variant file.")
