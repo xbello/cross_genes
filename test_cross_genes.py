@@ -1,7 +1,10 @@
 import argparse
 from os.path import dirname, join
 from unittest import TestCase
-from unittest import mock
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 import cross_genes as cg
 
