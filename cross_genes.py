@@ -153,7 +153,7 @@ def main(n_args):
                                           exclude=n_args.exclusion)
         print_variants(var_bool)
     else:
-        if args.exclusion:
+        if n_args.exclusion:
             raise Exception(
                 "Not implemented for genes. Remove the --exclusion flag.")
         else:

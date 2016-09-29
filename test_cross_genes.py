@@ -196,9 +196,9 @@ class TestMainEntry(TestCase):
     def setUp(self):
         path = dirname(__file__)
 
-        self.filename1 = join(path, "test_files/genes_list.txt")
-        self.filename2 = join(path, "test_files/genes_list2.txt")
-        self.filename3 = join(path, "test_files/genes_list3.txt")
+        self.genes1 = join(path, "test_files/genes_list.txt")
+        self.genes2 = join(path, "test_files/genes_list2.txt")
+        self.genes3 = join(path, "test_files/genes_list3.txt")
 
         self.variants1 = join(path, "test_files/CASE1.variants.tsv")
         self.variants2 = join(path, "test_files/CASE2.variants.tsv")
@@ -225,4 +225,25 @@ class TestMainEntry(TestCase):
             cg.main(Args(
                 filenames=
                 [self.variants1, self.variants1, self.variants1],
+                exclusion=True))
+
+    @mock.patch("cross_genes.print_genes")
+    def test_main_routes_properly_to_functions(self, patched_pg):
+
+        class Args(object):
+            def __init__(self, *args, **kwargs):
+                self.filenames = kwargs.get("filenames")
+                self.exclusion = kwargs.get("exclusion")
+
+        cg.main(Args(filenames=[self.genes1, self.genes2, self.genes3],
+                     exclusion=False))
+        # Assert function was called correctly
+        patched_pg.assert_called_once_with(
+            self.genes1, self.genes2, self.genes3)
+
+        # Assert exclusion raises an error
+        with self.assertRaises(Exception):
+            cg.main(Args(
+                filenames=
+                [self.genes1, self.genes2, self.genes3],
                 exclusion=True))
