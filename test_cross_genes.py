@@ -204,7 +204,8 @@ class TestMainEntry(TestCase):
         self.variants2 = join(path, "test_files/CASE2.variants.tsv")
 
     @mock.patch("cross_genes.cross_combine_variants")
-    def test_main_routes_properly_to_functions(self, patched_ccv):
+    @mock.patch("cross_genes.print_variants")
+    def test_main_routes_properly_to_functions(self, patched_pv, patched_ccv):
 
         class Args(object):
             def __init__(self, *args, **kwargs):
@@ -216,6 +217,8 @@ class TestMainEntry(TestCase):
         # Assert function was called correctly
         patched_ccv.assert_called_once_with(
             self.variants1, self.variants2, exclude=False)
+
+        patched_pv.assert_called_once_with(patched_ccv.return_value)
 
         # Assert only one file raises an error.
         with self.assertRaises(Exception):
