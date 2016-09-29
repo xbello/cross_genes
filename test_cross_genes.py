@@ -207,13 +207,19 @@ class TestMainEntry(TestCase):
     def test_main_routes_properly_to_functions(self, patched_ccv):
 
         class Args(object):
-            filenames = [self.variants1, self.variants2]
-            exclusion = False
+            def __init__(self, *args, **kwargs):
+                self.filenames = kwargs.get("filenames")
+                self.exclusion = kwargs.get("exclusion")
 
-        cg.main(Args())
-
+        cg.main(Args(filenames=[self.variants1, self.variants2],
+                     exclusion=False))
         # Assert function was called correctly
         patched_ccv.assert_called_once_with(
             self.variants1, self.variants2, exclude=False)
 
-        #
+        # Assert only one file raises an error.
+        with self.assertRaises(Exception):
+            cg.main(Args(
+                filenames=
+                [self.variants1, self.variants1, self.variants1],
+                exclusion=True))
