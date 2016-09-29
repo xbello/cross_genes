@@ -205,7 +205,7 @@ class TestMainEntry(TestCase):
 
     @mock.patch("cross_genes.cross_combine_variants")
     @mock.patch("cross_genes.print_variants")
-    def test_main_routes_properly_to_functions(self, patched_pv, patched_ccv):
+    def test_main_routes_properly_to_variants(self, patched_pv, patched_ccv):
 
         class Args(object):
             def __init__(self, *args, **kwargs):
@@ -228,7 +228,7 @@ class TestMainEntry(TestCase):
                 exclusion=True))
 
     @mock.patch("cross_genes.print_genes")
-    def test_main_routes_properly_to_functions(self, patched_pg):
+    def test_main_routes_properly_to_genes(self, patched_pg):
 
         class Args(object):
             def __init__(self, *args, **kwargs):
