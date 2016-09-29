@@ -145,7 +145,7 @@ def print_variants(variants_dict):
 def main(n_args):
     """Perform the CLI command."""
     if all([is_variants(filename) for filename in n_args.filenames]):
-        if len(args.filenames) > 2:
+        if len(n_args.filenames) > 2:
             if args.exclusion:
                 raise Exception(
                     "Only can exclude 2 files. Remove the --exclusion flag.")

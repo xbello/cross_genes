@@ -1,5 +1,7 @@
+import argparse
 from os.path import dirname, join
 from unittest import TestCase
+from unittest import mock
 
 import cross_genes as cg
 
@@ -185,3 +187,30 @@ class TestCrossMultipleFiles(TestWithCountItems):
         self.assertEqual(len(variants["CASE1.variants-CASE2.variants"]), 5)
         self.assertEqual(len(variants["CASE1.variants-CASE3.variants"]), 9)
         self.assertEqual(len(variants["CASE2.variants-CASE3.variants"]), 4)
+
+
+class TestMainEntry(TestCase):
+    def setUp(self):
+        path = dirname(__file__)
+
+        self.filename1 = join(path, "test_files/genes_list.txt")
+        self.filename2 = join(path, "test_files/genes_list2.txt")
+        self.filename3 = join(path, "test_files/genes_list3.txt")
+
+        self.variants1 = join(path, "test_files/CASE1.variants.tsv")
+        self.variants2 = join(path, "test_files/CASE2.variants.tsv")
+
+    @mock.patch("cross_genes.cross_combine_variants")
+    def test_main_routes_properly_to_functions(self, patched_ccv):
+
+        class Args(object):
+            filenames = [self.variants1, self.variants2]
+            exclusion = False
+
+        cg.main(Args())
+
+        # Assert function was called correctly
+        patched_ccv.assert_called_once_with(
+            self.variants1, self.variants2, exclude=False)
+
+        #
