@@ -81,10 +81,10 @@ def difference_two_genes(first, second):
 
 
 def is_variants(filename):
-    """Return true if filename has at leas five columns, else return false."""
+    """Return true if filename has at least five columns, else return false."""
     with open(filename) as f:
         cols = f.readline().split()
-        if len(cols) > 5:
+        if len(cols) >= 5:
             return True
     return False
 

@@ -1,11 +1,29 @@
 # cross_genes
-Check the common names in multiple files.
+
+![python 2.7 3.4](https://img.shields.io/badge/python-2.7%203.4-blue.svg)
+
+Check the common values in multiple files. 
+
+Files can be a list of genes like [this](test_files/genes_list.txt), with one
+gene name per line or multiple genes per line splitted with semicolons. Double
+quotes are ignored.
+
+Files can be a Tab-Separated-Values like [this](test_files/CASE1.variants.tsv),
+with many columns. Only the first five columns are significant, i.e. if two
+rows differ only in columns beyond the fifth column they are considered equal.
+
+You can compare:
+
+  - Multiple variant files showing the values *common* between the pairs.
+  - Two variant files showing the values *only* in the first one (exclusion).
+  - Multiple gene files showing the values *common* to all of them and in pairs.
+
 
 Install
 =======
 
 Just download the whole repo and execute `cross_genes.py` file with the python
-interpreter. No libraries are needed.
+interpreter. No extra libraries are needed.
 
 Usage
 =====
@@ -32,19 +50,19 @@ Usage
 Samples
 =======
 
-Print a .tsv output with the variants in CASE1 that are unique to that file:
+Writes .tsv output with the variants in CASE1 that are unique to that file:
 
 ```
 python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --exclusion
 ```
 
-Print a .tsv output with the variants common to CASE1 and CASE2:
+Writes a .tsv output with the variants common to CASE1 and CASE2:
 
 ```
 python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv
 ```
 
-Print a list with the genes common to all the gene_list files and three more
+Prints a list with the genes common to all the gene_list files and three more
 lists with the genes common to each posible pair (combination) of files:
 
 ```
