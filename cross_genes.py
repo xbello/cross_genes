@@ -123,9 +123,15 @@ def load_variants(filename, extra=""):
             key = variant[:5]
             for column in extra_columns:
                 if variant[column] in ["."]:
+                    # Some columns, like "." should be forced to be empty
                     key.append("")
                 else:
-                    key.append(variant[column])
+                    try:
+                        key.append(round(float(variant[column]), 2))
+                    except ValueError:
+                        # If the column cannot be casted to a float, let it in
+                        #  as a string
+                        key.append(variant[column])
 
             variants[tuple(key)] = variant
 
