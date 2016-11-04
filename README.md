@@ -1,6 +1,6 @@
 # cross_genes
 
-![python 2.7 3.4](https://img.shields.io/badge/python-2.7%203.4-blue.svg)
+![python 2.7 3.4 3.5](https://img.shields.io/badge/python-2.7%203.4%203.5-blue.svg)
 
 Check the common values in multiple files. 
 
@@ -56,30 +56,33 @@ Usage
 Samples
 =======
 
-Writes .tsv output with the variants in CASE1 that are unique to that file:
+**Writes** .tsv output with the variants in CASE1 that are unique to that file:
 
 ```
 python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv --exclusion
 ```
+---
 
-Writes .tsv output with the variants in Extra1.tsv that are unique to that file,
+**Writes** .tsv output with the variants in Extra1.tsv that are unique to that file,
 including the data in the column ExAC_ALL and ExAC_NFE. If the same position have
 different values for any of the columns, they're considered different variants.
 
 Useful if you re-annotated some columns in Extra1.tsv and want to see the differences
-with the old annotation in Extra2.tsv
+with the old annotation in Extra2.tsv:
 
 ```
 python3 cross_genes.py test_files/Extra1.tsv test_files/Extra2.tsv --exclusion --extra ExAC_ALL,ExAC_NFE
 ```
+---
 
-Writes a .tsv output with the variants common to CASE1 and CASE2:
+**Writes** a .tsv output with the variants common to CASE1 and CASE2:
 
 ```
 python3 cross_genes.py test_files/CASE1.variants.tsv test_files/CASE2.variants.tsv
 ```
+---
 
-Prints a list with the genes common to all the gene_list files and three more
+**Prints** a list with the genes common to all the gene_list files and three more
 lists with the genes common to each posible pair (combination) of files:
 
 ```
