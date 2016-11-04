@@ -1,4 +1,3 @@
-import argparse
 from os.path import dirname, join
 from unittest import TestCase
 try:
@@ -205,15 +204,20 @@ class TestMainEntry(TestCase):
 
     @mock.patch("cross_genes.cross_combine_variants")
     @mock.patch("cross_genes.print_variants")
-    def test_main_routes_properly_to_variants(self, patched_pv, patched_ccv):
+    @mock.patch("cross_genes.parse_args")
+    def test_main_routes_properly_to_variants(self,
+                                              patched_pa,
+                                              patched_pv,
+                                              patched_ccv):
 
         class Args(object):
             def __init__(self, *args, **kwargs):
                 self.filenames = kwargs.get("filenames")
                 self.exclusion = kwargs.get("exclusion")
 
-        cg.main(Args(filenames=[self.variants1, self.variants2],
-                     exclusion=False))
+        patched_pa.return_value = Args(
+            filenames=[self.variants1, self.variants2], exclusion=False)
+        cg.main()
         # Assert function was called correctly
         patched_ccv.assert_called_once_with(
             self.variants1, self.variants2, exclude=False)
@@ -221,29 +225,31 @@ class TestMainEntry(TestCase):
         patched_pv.assert_called_once_with(patched_ccv.return_value)
 
         # Assert only one file raises an error.
+        patched_pa.return_value = Args(
+            filenames=[self.variants1, self.variants1, self.variants1],
+            exclusion=True)
         with self.assertRaises(Exception):
-            cg.main(Args(
-                filenames=
-                [self.variants1, self.variants1, self.variants1],
-                exclusion=True))
+            cg.main()
 
     @mock.patch("cross_genes.print_genes")
-    def test_main_routes_properly_to_genes(self, patched_pg):
+    @mock.patch("cross_genes.parse_args")
+    def test_main_routes_properly_to_genes(self, patched_pa, patched_pg):
 
         class Args(object):
             def __init__(self, *args, **kwargs):
                 self.filenames = kwargs.get("filenames")
                 self.exclusion = kwargs.get("exclusion")
 
-        cg.main(Args(filenames=[self.genes1, self.genes2, self.genes3],
-                     exclusion=False))
+        patched_pa.return_value = Args(
+            filenames=[self.genes1, self.genes2, self.genes3], exclusion=False)
+
+        cg.main()
         # Assert function was called correctly
         patched_pg.assert_called_once_with(
             self.genes1, self.genes2, self.genes3)
 
         # Assert exclusion raises an error
+        patched_pa.return_value = Args(
+            filenames=[self.genes1, self.genes2, self.genes3], exclusion=True)
         with self.assertRaises(Exception):
-            cg.main(Args(
-                filenames=
-                [self.genes1, self.genes2, self.genes3],
-                exclusion=True))
+            cg.main()

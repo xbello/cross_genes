@@ -142,25 +142,9 @@ def print_variants(variants_dict):
         print("Writen {}".format(case + ".tsv"))
 
 
-def main(n_args):
-    """Perform the CLI command."""
-    if all([is_variants(filename) for filename in n_args.filenames]):
-        if len(n_args.filenames) > 2:
-            if n_args.exclusion:
-                raise Exception(
-                    "Only can exclude 2 files. Remove the --exclusion flag.")
-        var_bool = cross_combine_variants(*n_args.filenames,
-                                          exclude=n_args.exclusion)
-        print_variants(var_bool)
-    else:
-        if n_args.exclusion:
-            raise Exception(
-                "Not implemented for genes. Remove the --exclusion flag.")
-        else:
-            print_genes(*n_args.filenames)
+def parse_args():
+    """Return the parsed arguments."""
 
-
-if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -176,10 +160,32 @@ if __name__ == "__main__":
                         help="""Perform an exclusion (items only in the first
                         file) instead a common position search.""")
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    main(args)
 
-    if args.variants:
+def main():
+    """Perform the CLI command."""
+    n_args = parse_args()
+
+    if all([is_variants(filename) for filename in n_args.filenames]):
+        if len(n_args.filenames) > 2:
+            if n_args.exclusion:
+                raise Exception(
+                    "Only can exclude 2 files. Remove the --exclusion flag.")
+        var_bool = cross_combine_variants(*n_args.filenames,
+                                          exclude=n_args.exclusion)
+        print_variants(var_bool)
+    else:
+        if n_args.exclusion:
+            raise Exception(
+                "Not implemented for genes. Remove the --exclusion flag.")
+        else:
+            print_genes(*n_args.filenames)
+
+    if hasattr(n_args, "variants"):
         _deprecation("The --variants flag is no longer needed. Any file with" +
                      " five or more columns is assumed to be a variant file.")
+
+
+if __name__ == "__main__":
+    main()
