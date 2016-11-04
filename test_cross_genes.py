@@ -93,6 +93,8 @@ class TestCrossPositions(TestWithCountItems):
 
         self.filename1 = join(path, "test_files/CASE1.variants.tsv")
         self.filename2 = join(path, "test_files/CASE2.variants.tsv")
+        self.filename3 = join(path, "test_files/Extra1.tsv")
+        self.filename4 = join(path, "test_files/Extra2.tsv")
 
     def test_common_variants(self):
         self.assertCountItemsEqual(
@@ -141,6 +143,21 @@ class TestCrossPositions(TestWithCountItems):
                   ("chr1", "792263", "792263", "A", "G")]
         self.assertCountItemsEqual(cg.load_variants(self.filename1).keys(),
                                    result)
+
+    def test_load_variants_with_extra_columns(self):
+        result = ["header",
+                  ("chr1", "14907", "14907", "A", "G", ""),
+                  ("chr1", "14930", "14930", "A", "G", ""),
+                  ("chr1", "69511", "69511", "A", "G", "0.9394"),
+                  ("chr1", "324822", "324822", "A", "T", "0.0746"),
+                  ("chr1", "664468", "664468", "G", "T", ""),
+                  ("chr1", "762273", "762273", "G", "A", "0.8060"),
+                  ("chr1", "762589", "762589", "G", "C", "0.7773"),
+                  ("chr1", "762592", "762592", "C", "G", "0.7761"),
+                  ("chr1", "762601", "762601", "T", "C", "0.7756")]
+        self.maxDiff = None
+        self.assertCountItemsEqual(
+            cg.load_variants(self.filename3, extra="ExAC_ALL").keys(), result)
 
 
 class TestFileDetection(TestCase):
@@ -202,22 +219,14 @@ class TestMainEntry(TestCase):
         self.variants1 = join(path, "test_files/CASE1.variants.tsv")
         self.variants2 = join(path, "test_files/CASE2.variants.tsv")
 
+        self.argsparser = cg.argparser()
+
     @mock.patch("cross_genes.cross_combine_variants")
     @mock.patch("cross_genes.print_variants")
-    @mock.patch("cross_genes.parse_args")
-    def test_main_routes_properly_to_variants(self,
-                                              patched_pa,
-                                              patched_pv,
-                                              patched_ccv):
-
-        class Args(object):
-            def __init__(self, *args, **kwargs):
-                self.filenames = kwargs.get("filenames")
-                self.exclusion = kwargs.get("exclusion")
-
-        patched_pa.return_value = Args(
-            filenames=[self.variants1, self.variants2], exclusion=False)
-        cg.main()
+    def test_main_routes_properly_to_variants(self, patched_pv, patched_ccv):
+        n_args = self.argsparser.parse_args(args=[
+            self.variants1, self.variants2])
+        cg.main(n_args)
         # Assert function was called correctly
         patched_ccv.assert_called_once_with(
             self.variants1, self.variants2, exclude=False)
@@ -225,31 +234,26 @@ class TestMainEntry(TestCase):
         patched_pv.assert_called_once_with(patched_ccv.return_value)
 
         # Assert only one file raises an error.
-        patched_pa.return_value = Args(
-            filenames=[self.variants1, self.variants1, self.variants1],
-            exclusion=True)
+        n_args = self.argsparser.parse_args(
+            args=[self.variants1, self.variants1, self.variants1,
+                  "--exclusion"])
         with self.assertRaises(Exception):
-            cg.main()
+            cg.main(n_args)
 
     @mock.patch("cross_genes.print_genes")
-    @mock.patch("cross_genes.parse_args")
-    def test_main_routes_properly_to_genes(self, patched_pa, patched_pg):
+    def test_main_routes_properly_to_genes(self, patched_pg):
 
-        class Args(object):
-            def __init__(self, *args, **kwargs):
-                self.filenames = kwargs.get("filenames")
-                self.exclusion = kwargs.get("exclusion")
+        n_args = self.argsparser.parse_args(
+            args=[self.genes1, self.genes2, self.genes3])
 
-        patched_pa.return_value = Args(
-            filenames=[self.genes1, self.genes2, self.genes3], exclusion=False)
-
-        cg.main()
+        cg.main(n_args)
         # Assert function was called correctly
         patched_pg.assert_called_once_with(
             self.genes1, self.genes2, self.genes3)
 
         # Assert exclusion raises an error
-        patched_pa.return_value = Args(
-            filenames=[self.genes1, self.genes2, self.genes3], exclusion=True)
+        n_args = self.argsparser.parse_args(
+            args=[self.genes1, self.genes2, self.genes3,
+                  "--exclusion"])
         with self.assertRaises(Exception):
-            cg.main()
+            cg.main(n_args)

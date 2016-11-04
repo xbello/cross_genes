@@ -5,6 +5,8 @@ from itertools import combinations
 import os
 import warnings
 
+import utils
+
 
 def _deprecation(message):
     """Allow DeprecationWarnings to show."""
@@ -105,13 +107,22 @@ def load_genes(filename):
     return genes
 
 
-def load_variants(filename):
+def load_variants(filename, extra=""):
     """Return a dict with the variants in a filename."""
+    extra_columns = []
+    if extra:
+        for column in extra.split(","):
+            extra_columns.append(utils.get_column(filename, column))
+
     with open2(filename, encoding="utf-8", errors="replace") as f1:
         variants = {"header": f1.readline().rstrip().split("\t")}
+
         for line in f1:
             variant = line.rstrip().split("\t")
-            variants[tuple(variant[:5])] = variant
+            key = variant[:5]
+            for column in extra_columns:
+                key.append(variant[column])
+            variants[tuple(key)] = variant
 
     return variants
 
@@ -142,9 +153,8 @@ def print_variants(variants_dict):
         print("Writen {}".format(case + ".tsv"))
 
 
-def parse_args():
+def argparser():
     """Return the parsed arguments."""
-
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -160,13 +170,11 @@ def parse_args():
                         help="""Perform an exclusion (items only in the first
                         file) instead a common position search.""")
 
-    return parser.parse_args()
+    return parser
 
 
-def main():
+def main(n_args):
     """Perform the CLI command."""
-    n_args = parse_args()
-
     if all([is_variants(filename) for filename in n_args.filenames]):
         if len(n_args.filenames) > 2:
             if n_args.exclusion:
@@ -188,4 +196,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(argparser().parse_args(sys.argv[1:]))
