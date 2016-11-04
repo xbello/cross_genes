@@ -28,7 +28,8 @@ def cross_variants(*filenames, **kwargs):
     If exclude is True, return the variants unique to the first element.
 
     """
-    variants_list = [load_variants(f) for f in filenames]
+    variants_list = [load_variants(f, extra=kwargs.get("extra"))
+                     for f in filenames]
 
     if kwargs.get("exclude"):
         pos = reduce(difference_two_genes, variants_list)
@@ -121,7 +122,11 @@ def load_variants(filename, extra=""):
             variant = line.rstrip().split("\t")
             key = variant[:5]
             for column in extra_columns:
-                key.append(variant[column])
+                if variant[column] in ["."]:
+                    key.append("")
+                else:
+                    key.append(variant[column])
+
             variants[tuple(key)] = variant
 
     return variants

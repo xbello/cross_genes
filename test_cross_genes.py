@@ -159,6 +159,24 @@ class TestCrossPositions(TestWithCountItems):
         self.assertCountItemsEqual(
             cg.load_variants(self.filename3, extra="ExAC_ALL").keys(), result)
 
+    def test_different_variants_from_files_with_extra_columns(self):
+        result = ["header",
+                  ("chr1", "69511", "69511", "A", "G", "0.9394"),
+                  ("chr1", "324822", "324822", "A", "T", "0.0746"),
+                  ("chr1", "762273", "762273", "G", "A", "0.8060"),
+                  ("chr1", "762589", "762589", "G", "C", "0.7773"),
+                  ("chr1", "762592", "762592", "C", "G", "0.7761"),
+                  ("chr1", "762601", "762601", "T", "C", "0.7756")]
+        self.maxDiff = None
+
+        self.assertCountItemsEqual(
+            cg.cross_variants(
+                self.filename3,
+                self.filename4,
+                exclude=True,
+                extra="ExAC_ALL").keys(),
+            result)
+
 
 class TestFileDetection(TestCase):
     def test_is_variants(self):
