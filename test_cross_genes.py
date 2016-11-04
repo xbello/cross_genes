@@ -242,7 +242,7 @@ class TestMainEntry(TestCase):
         cg.main(n_args)
         # Assert function was called correctly
         patched_ccv.assert_called_once_with(
-            self.variants1, self.variants2, exclude=False)
+            self.variants1, self.variants2, exclude=False, extra=None)
 
         patched_pv.assert_called_once_with(patched_ccv.return_value)
 

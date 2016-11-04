@@ -180,6 +180,13 @@ def argparser():
     parser.add_argument("--exclusion", action="store_true",
                         help="""Perform an exclusion (items only in the first
                         file) instead a common position search.""")
+    parser.add_argument(
+        "--extra",
+        help="""When comparing two variant files only the first five columns are
+        checked for equality. With --extra you can add column names separated by
+        commas, e.g.: --extra ExAC_ALL,ExAC_NFE
+
+        The columns are converted in floats with two decimals if possible.""")
 
     return parser
 
@@ -192,7 +199,8 @@ def main(n_args):
                 raise Exception(
                     "Only can exclude 2 files. Remove the --exclusion flag.")
         var_bool = cross_combine_variants(*n_args.filenames,
-                                          exclude=n_args.exclusion)
+                                          exclude=n_args.exclusion,
+                                          extra=n_args.extra)
         print_variants(var_bool)
     else:
         if n_args.exclusion:
@@ -201,7 +209,7 @@ def main(n_args):
         else:
             print_genes(*n_args.filenames)
 
-    if hasattr(n_args, "variants"):
+    if n_args.variants:
         _deprecation("The --variants flag is no longer needed. Any file with" +
                      " five or more columns is assumed to be a variant file.")
 
