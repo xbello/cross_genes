@@ -1,5 +1,10 @@
+import argparse
 from os.path import dirname, join
 from unittest import TestCase
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 import cross_genes as cg
 
@@ -26,37 +31,38 @@ class TestCrossGenes(TestWithCountItems):
         self.filename3 = join(path, "test_files/genes_list3.txt")
 
     def test_cross_two(self):
-        self.assertCountItemsEqual(cg.cross_two(self.genes_1, self.genes_2),
-                                   ["GENE1", "GENE2"])
-        self.assertCountItemsEqual(cg.cross_two(self.genes_1, self.genes_3),
-                                   ["GENE1"])
+        self.assertCountItemsEqual(
+            cg.cross_two_genes(self.genes_1, self.genes_2), ["GENE1", "GENE2"])
+        self.assertCountItemsEqual(
+            cg.cross_two_genes(self.genes_1, self.genes_3), ["GENE1"])
 
     def test_cross_multiple_files(self):
         self.assertCountItemsEqual(
-            cg.cross_multiple_files(self.filename1,
+            cg.cross_multiple_genes(self.filename1,
                                     self.filename2,
                                     self.filename3),
             ["PCDHA9", "PCDHA1", "PCDHA2", "PCDHA8", "NOP16"])
 
     def test_cross_one_file(self):
         self.assertCountItemsEqual(
-            cg.cross_multiple_files(self.filename1),
+            cg.cross_multiple_genes(self.filename1),
             ["NOC2L", "SMYD2", "OR2T35", "PCDHA9", "PCDHA1", "PCDHA2",
              "PCDHA8", "NOP16"])
 
     def test_cross_two_files(self):
         self.assertCountItemsEqual(
-            cg.cross_multiple_files(self.filename1, self.filename2),
+            cg.cross_multiple_genes(self.filename1, self.filename2),
             ["NOC2L", "PCDHA1", "PCDHA2", "PCDHA8", "PCDHA9", "NOP16"])
         self.assertCountItemsEqual(
-            cg.cross_multiple_files(self.filename1, self.filename3),
+            cg.cross_multiple_genes(self.filename1, self.filename3),
             ["PCDHA9", "PCDHA1", "PCDHA2", "PCDHA8", "NOP16"])
 
     def test_cross_combine_multiple_files(self):
         # When comparing multiple files, the user want to know all-vs-all and
         #  one-vs-one individually.
         self.assertCountItemsEqual(
-            cg.cross_combine(self.filename1, self.filename2, self.filename3),
+            cg.cross_combine_genes(
+                self.filename1, self.filename2, self.filename3),
             {"genes_list-genes_list2":
              ["NOC2L", "PCDHA1", "PCDHA2", "PCDHA8", "PCDHA9", "NOP16"],
              "genes_list2-genes_list3":
@@ -68,7 +74,7 @@ class TestCrossGenes(TestWithCountItems):
 
     def test_load_list(self):
         self.assertCountItemsEqual(
-            cg.load_list(self.filename1),
+            cg.load_genes(self.filename1),
             ["NOC2L", "SMYD2", "OR2T35", "PCDHA1", "PCDHA2", "PCDHA8",
              "PCDHA9", "NOP16"])
 
@@ -89,15 +95,6 @@ class TestCrossPositions(TestWithCountItems):
         self.filename1 = join(path, "test_files/CASE1.variants.tsv")
         self.filename2 = join(path, "test_files/CASE2.variants.tsv")
 
-    def test_common_positions_are_found(self):
-        self.assertCountItemsEqual(
-            cg.common_positions(self.filename1, self.filename2),
-            ["header",
-             ("chr1", "14930", "14930", "A", "G"),
-             ("chr1", "762273", "762273", "G", "A"),
-             ("chr1", "762592", "762592", "C", "G"),
-             ("chr1", "792263", "792263", "A", "G")])
-
     def test_common_variants(self):
         self.assertCountItemsEqual(
             cg.cross_variants(self.filename1, self.filename2).keys(),
@@ -109,11 +106,11 @@ class TestCrossPositions(TestWithCountItems):
 
     def test_different_variants(self):
         self.assertCountItemsEqual(
-            cg.difference_two(self.positions1, self.positions2),
+            cg.difference_two_genes(self.positions1, self.positions2),
             [("chr1", "14930", "14930", "A", "G"),
              ("chr1", "762592", "762592", "C", "G")])
         self.assertCountItemsEqual(
-            cg.difference_two(self.positions2, self.positions1),
+            cg.difference_two_genes(self.positions2, self.positions1),
             [("chr1", "14930", "14930", "A", "T"),
              ("chr1", "762273", "762273", "G", "A")])
 
@@ -155,3 +152,98 @@ class TestFileDetection(TestCase):
 
         self.assertTrue(cg.is_variants(variants))
         self.assertFalse(cg.is_variants(genes))
+
+
+class TestCrossMultipleFiles(TestWithCountItems):
+    def setUp(self):
+        self.positions1 = [("chr1", "14930", "14930", "A", "G"),
+                           ("chr1", "762592", "762592", "C", "G"),
+                           ("chr1", "762601", "762601", "T", "C"),
+                           ("chr1", "792263", "792263", "A", "G")]
+        self.positions2 = [("chr1", "14930", "14930", "A", "T"),  # Different
+                           ("chr1", "762273", "762273", "G", "A"),
+                           ("chr1", "762601", "762601", "T", "C"),
+                           ("chr1", "792263", "792263", "A", "G")]
+
+        path = dirname(__file__)
+
+        self.filename1 = join(path, "test_files/CASE1.variants.tsv")
+        self.filename2 = join(path, "test_files/CASE2.variants.tsv")
+        self.filename3 = join(path, "test_files/CASE3.variants.tsv")
+
+    def test_common_variants(self):
+        self.assertCountItemsEqual(
+            cg.cross_variants(
+                self.filename1, self.filename2, self.filename3).keys(),
+            ["header",
+             ("chr1", "14930", "14930", "A", "G"),
+             ("chr1", "762273", "762273", "G", "A"),
+             ("chr1", "762592", "762592", "C", "G")])
+
+    def test_different_variants(self):
+        variants = cg.cross_combine_variants(
+            self.filename1, self.filename2, self.filename3)
+        self.assertCountItemsEqual(variants.keys(),
+                                   ["CASE1.variants-CASE2.variants",
+                                    "CASE1.variants-CASE3.variants",
+                                    "CASE2.variants-CASE3.variants"])
+        self.assertEqual(len(variants["CASE1.variants-CASE2.variants"]), 5)
+        self.assertEqual(len(variants["CASE1.variants-CASE3.variants"]), 9)
+        self.assertEqual(len(variants["CASE2.variants-CASE3.variants"]), 4)
+
+
+class TestMainEntry(TestCase):
+    def setUp(self):
+        path = dirname(__file__)
+
+        self.genes1 = join(path, "test_files/genes_list.txt")
+        self.genes2 = join(path, "test_files/genes_list2.txt")
+        self.genes3 = join(path, "test_files/genes_list3.txt")
+
+        self.variants1 = join(path, "test_files/CASE1.variants.tsv")
+        self.variants2 = join(path, "test_files/CASE2.variants.tsv")
+
+    @mock.patch("cross_genes.cross_combine_variants")
+    @mock.patch("cross_genes.print_variants")
+    def test_main_routes_properly_to_variants(self, patched_pv, patched_ccv):
+
+        class Args(object):
+            def __init__(self, *args, **kwargs):
+                self.filenames = kwargs.get("filenames")
+                self.exclusion = kwargs.get("exclusion")
+
+        cg.main(Args(filenames=[self.variants1, self.variants2],
+                     exclusion=False))
+        # Assert function was called correctly
+        patched_ccv.assert_called_once_with(
+            self.variants1, self.variants2, exclude=False)
+
+        patched_pv.assert_called_once_with(patched_ccv.return_value)
+
+        # Assert only one file raises an error.
+        with self.assertRaises(Exception):
+            cg.main(Args(
+                filenames=
+                [self.variants1, self.variants1, self.variants1],
+                exclusion=True))
+
+    @mock.patch("cross_genes.print_genes")
+    def test_main_routes_properly_to_genes(self, patched_pg):
+
+        class Args(object):
+            def __init__(self, *args, **kwargs):
+                self.filenames = kwargs.get("filenames")
+                self.exclusion = kwargs.get("exclusion")
+
+        cg.main(Args(filenames=[self.genes1, self.genes2, self.genes3],
+                     exclusion=False))
+        # Assert function was called correctly
+        patched_pg.assert_called_once_with(
+            self.genes1, self.genes2, self.genes3)
+
+        # Assert exclusion raises an error
+        with self.assertRaises(Exception):
+            cg.main(Args(
+                filenames=
+                [self.genes1, self.genes2, self.genes3],
+                exclusion=True))
