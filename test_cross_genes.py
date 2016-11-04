@@ -146,6 +146,7 @@ class TestCrossPositions(TestWithCountItems):
         self.assertCountItemsEqual(cg.load_variants(self.filename1).keys(),
                                    result)
 
+
 class TestFileDetection(TestCase):
     def test_is_variants(self):
         path = dirname(__file__)
