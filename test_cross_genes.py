@@ -95,6 +95,7 @@ class TestCrossPositions(TestWithCountItems):
         self.filename2 = join(path, "test_files/CASE2.variants.tsv")
         self.filename3 = join(path, "test_files/Extra1.tsv")
         self.filename4 = join(path, "test_files/Extra2.tsv")
+        self.filename5 = join(path, "test_files/Extra3.tsv")
 
     def test_common_variants(self):
         self.assertCountItemsEqual(
@@ -171,6 +172,13 @@ class TestCrossPositions(TestWithCountItems):
                 exclude=True,
                 extra="ExAC_ALL").keys(),
             result)
+
+    def test_load_variants_with_extra_columns_ending_in_tabs(self):
+        result = ["header",
+                  ("chr1", "745486", "745486", "T", "-", "")]
+        self.maxDiff = None
+        self.assertCountItemsEqual(
+            cg.load_variants(self.filename5, extra="ExAC_ALL").keys(), result)
 
 
 class TestFileDetection(TestCase):

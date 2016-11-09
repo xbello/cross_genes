@@ -119,7 +119,10 @@ def load_variants(filename, extra=""):
         variants = {"header": f1.readline().rstrip().split("\t")}
 
         for line in f1:
-            variant = line.rstrip().split("\t")
+            variant = line.split("\t")  # Some lines ends in lots of empty cols
+                                        #  so we keep every one of them
+            variant[-1] = variant[-1].rstrip()
+
             key = variant[:5]
             for column in extra_columns:
                 if variant[column] in ["."]:
